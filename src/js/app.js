@@ -15,7 +15,7 @@ class GamePicker {
 
     async loadGames() {
         try {
-            const response = await fetch('data/games.json');
+            const response = await fetch('src/data/games.json');
             this.games = await response.json();
         } catch (error) {
             console.error('Failed to load games:', error);
