@@ -16,6 +16,7 @@ class GamePicker {
         setTimeout(() => {
             const activeMarker = document.querySelector('.time-marker.active');
             if (activeMarker) {
+                console.log('Setting initial slider position to:', activeMarker.dataset.value);
                 this.updateSliderPosition(activeMarker.dataset.value);
             }
         }, 100);
@@ -35,6 +36,9 @@ class GamePicker {
         const getRecommendationsBtn = document.getElementById('get-recommendations');
         const getNewPicksBtn = document.getElementById('get-new-picks');
         const shareListBtn = document.getElementById('share-list');
+        const viewLeaderboardBtn = document.getElementById('view-leaderboard');
+        const backHomeBtn = document.getElementById('back-home');
+        const shareLeaderboardBtn = document.getElementById('share-leaderboard');
 
         getRecommendationsBtn.addEventListener('click', () => this.getRecommendations());
         if (getNewPicksBtn) {
@@ -42,6 +46,15 @@ class GamePicker {
         }
         if (shareListBtn) {
             shareListBtn.addEventListener('click', () => this.shareList());
+        }
+        if (viewLeaderboardBtn) {
+            viewLeaderboardBtn.addEventListener('click', () => this.showLeaderboard());
+        }
+        if (backHomeBtn) {
+            backHomeBtn.addEventListener('click', () => this.showSelectionView());
+        }
+        if (shareLeaderboardBtn) {
+            shareLeaderboardBtn.addEventListener('click', () => this.shareLeaderboard());
         }
 
         // Theme button selection (allow multiple)
@@ -67,6 +80,9 @@ class GamePicker {
                 this.savePreferences();
             });
         });
+
+        // Slider handle dragging
+        this.initSliderDrag();
     }
 
     getPreferences() {
@@ -246,6 +262,49 @@ class GamePicker {
         }
     }
 
+    trackGameClick(gameId) {
+        try {
+            const clicks = JSON.parse(localStorage.getItem('gameClickCounts') || '{}');
+            clicks[gameId] = (clicks[gameId] || 0) + 1;
+            localStorage.setItem('gameClickCounts', JSON.stringify(clicks));
+            console.log(`Tracked click for game: ${gameId}, total clicks: ${clicks[gameId]}`);
+        } catch (error) {
+            console.warn('Failed to track game click:', error);
+        }
+    }
+
+    getLeaderboard() {
+        try {
+            let clicks = JSON.parse(localStorage.getItem('gameClickCounts') || '{}');
+            
+            // If no click data exists, add some sample data for demonstration
+            if (Object.keys(clicks).length === 0 && this.games.length > 0) {
+                // Add sample click data for the first few games
+                const sampleClicks = {};
+                this.games.slice(0, 10).forEach((game, index) => {
+                    sampleClicks[game.id] = Math.floor(Math.random() * 50) + 1; // 1-50 clicks
+                });
+                clicks = sampleClicks;
+                localStorage.setItem('gameClickCounts', JSON.stringify(clicks));
+            }
+            
+            // Convert to array with game info and sort by clicks
+            const leaderboard = Object.entries(clicks)
+                .map(([gameId, clickCount]) => {
+                    const game = this.games.find(g => g.id === gameId);
+                    return game ? { ...game, clickCount } : null;
+                })
+                .filter(Boolean)
+                .sort((a, b) => b.clickCount - a.clickCount)
+                .slice(0, 10); // Top 10
+            
+            return leaderboard;
+        } catch (error) {
+            console.warn('Failed to get leaderboard:', error);
+            return [];
+        }
+    }
+
     saveSavedGames() {
         localStorage.setItem('gameWarmupSavedGames', JSON.stringify(this.savedGames));
     }
@@ -260,8 +319,8 @@ class GamePicker {
         this.saveSavedGames();
         
         // Refresh the current view to update the UI
-        const resultsView = document.getElementById('results-view');
-        if (resultsView.style.display !== 'none') {
+        const resultsContent = document.getElementById('results-content');
+        if (resultsContent.style.display !== 'none') {
             const currentGames = Array.from(document.querySelectorAll('.result-card')).map(card => {
                 const title = card.querySelector('.result-title').textContent;
                 return this.games.find(game => game.name === title);
@@ -357,8 +416,6 @@ class GamePicker {
     }
 
     showNoGamesMessage() {
-        const mainCard = document.querySelector('.main-card');
-        const resultsView = document.getElementById('results-view');
         const resultsList = document.getElementById('results-list');
         
         resultsList.innerHTML = `
@@ -368,27 +425,66 @@ class GamePicker {
             </div>
         `;
         
-        mainCard.style.display = 'none';
-        resultsView.style.display = 'flex';
+        // Use the same transition as displayRecommendations but with no games message
+        this.displayRecommendations([]);
     }
 
     displayRecommendations(games) {
-        // Hide the main card and show results view
-        const mainCard = document.querySelector('.main-card');
-        const resultsView = document.getElementById('results-view');
+        // Get elements
+        const mainContainer = document.getElementById('main-container');
+        const selectionContent = document.getElementById('selection-content');
+        const resultsContent = document.getElementById('results-content');
         const resultsList = document.getElementById('results-list');
-        const resultsTitle = resultsView.querySelector('h2');
+        const resultsTitle = resultsContent.querySelector('h2');
 
         // Get current time selection and update header
         const preferences = this.getPreferences();
         const timeText = preferences.timeCommitment >= 60 ? 'all day' : `${preferences.timeCommitment} min`;
         resultsTitle.textContent = `Your ${timeText} play list`;
 
+        // Prepare results content
         const sortedGames = this.sortGamesByDifficulty(games);
         resultsList.innerHTML = sortedGames.map((game, index) => this.createResultCard(game, index + 1)).join('');
         
-        mainCard.style.display = 'none';
-        resultsView.style.display = 'flex';
+        // Measure current height
+        const currentHeight = mainContainer.offsetHeight;
+        
+        // Temporarily show results content to measure its height
+        resultsContent.style.display = 'flex';
+        resultsContent.style.visibility = 'hidden';
+        const newHeight = mainContainer.scrollHeight;
+        resultsContent.style.visibility = '';
+        resultsContent.style.display = 'none';
+        
+        // Only animate height if new content is taller
+        const shouldAnimateHeight = newHeight > currentHeight;
+        
+        if (shouldAnimateHeight) {
+            // Set explicit height and start transition
+            mainContainer.style.height = currentHeight + 'px';
+        }
+        
+        // Staggered fade out of selection elements
+        this.staggeredFadeOut();
+        
+        setTimeout(() => {
+            // Hide selection and show results
+            selectionContent.style.display = 'none';
+            resultsContent.style.display = 'flex';
+            
+            // Animate height change only if needed
+            if (shouldAnimateHeight) {
+                mainContainer.style.height = newHeight + 'px';
+                
+                // Remove explicit height after animation
+                setTimeout(() => {
+                    mainContainer.style.height = 'auto';
+                }, 1200);
+            }
+            
+            // Staggered fade in of results elements
+            this.staggeredFadeIn();
+        }, 800);
     }
 
     sortGamesByDifficulty(games) {
@@ -422,7 +518,7 @@ class GamePicker {
                     <button class="star-btn" onclick="gamePicker.toggleSavedGame('${game.id}')">
                         ${starIcon}
                     </button>
-                    <a href="${game.url}" target="_blank" rel="noopener noreferrer" class="play-now-btn">
+                    <a href="${game.url}" target="_blank" rel="noopener noreferrer" class="play-now-btn" onclick="gamePicker.trackGameClick('${game.id}')">
                         PLAY NOW
                     </a>
                 </div>
@@ -503,26 +599,96 @@ class GamePicker {
     }
 
     showSelectionView() {
-        const mainCard = document.querySelector('.main-card');
-        const resultsView = document.getElementById('results-view');
+        const mainContainer = document.getElementById('main-container');
+        const selectionContent = document.getElementById('selection-content');
+        const resultsContent = document.getElementById('results-content');
+        const leaderboardContent = document.getElementById('leaderboard-content');
         
-        resultsView.style.display = 'none';
-        mainCard.style.display = 'flex';
+        // Reset all animation classes
+        this.resetAnimationClasses();
+        
+        setTimeout(() => {
+            // Hide results and leaderboard, show selection
+            resultsContent.style.display = 'none';
+            leaderboardContent.style.display = 'none';
+            selectionContent.style.display = 'flex';
+            
+            // Let container naturally adjust to selection content size
+            mainContainer.style.height = 'auto';
+        }, 300);
+    }
+    
+    resetAnimationClasses() {
+        // Reset selection elements
+        document.querySelector('.theme-section').classList.remove('fade-out');
+        document.querySelector('.time-section').classList.remove('fade-out');
+        document.querySelector('.reveal-button').classList.remove('fade-out');
+        
+        // Reset results elements
+        document.querySelector('.results-title').classList.remove('fade-in');
+        document.querySelector('.results-subtitle').classList.remove('fade-in');
+        document.querySelector('.results-list').classList.remove('fade-in');
+        document.querySelector('.results-actions').classList.remove('fade-in');
+        
+        // Reset result cards
+        document.querySelectorAll('.result-card').forEach(card => {
+            card.classList.remove('fade-in');
+        });
+    }
+
+    staggeredFadeOut() {
+        const themeSection = document.querySelector('.theme-section');
+        const timeSection = document.querySelector('.time-section');
+        const revealButton = document.querySelector('.reveal-button');
+        
+        // Fade out elements with delays
+        setTimeout(() => themeSection.classList.add('fade-out'), 0);
+        setTimeout(() => timeSection.classList.add('fade-out'), 150);
+        setTimeout(() => revealButton.classList.add('fade-out'), 300);
+    }
+    
+    staggeredFadeIn() {
+        const resultsTitle = document.querySelector('.results-title');
+        const resultsSubtitle = document.querySelector('.results-subtitle');
+        const resultsList = document.querySelector('.results-list');
+        const resultsActions = document.querySelector('.results-actions');
+        
+        // Fade in elements with delays
+        setTimeout(() => resultsTitle.classList.add('fade-in'), 0);
+        setTimeout(() => resultsSubtitle.classList.add('fade-in'), 200);
+        setTimeout(() => {
+            resultsList.classList.add('fade-in');
+            // Fade in individual result cards with staggered timing
+            const resultCards = document.querySelectorAll('.result-card');
+            resultCards.forEach((card, index) => {
+                setTimeout(() => card.classList.add('fade-in'), 100 + (index * 150));
+            });
+        }, 400);
+        setTimeout(() => resultsActions.classList.add('fade-in'), 600 + (document.querySelectorAll('.result-card').length * 150));
     }
 
     updateSliderPosition(timeValue) {
         const sliderHandle = document.querySelector('.slider-handle');
-        if (!sliderHandle) return;
+        if (!sliderHandle) {
+            console.warn('Slider handle not found in updateSliderPosition');
+            return;
+        }
 
         // Get the time markers to calculate exact positions
         const markers = document.querySelectorAll('.time-marker');
         const container = document.querySelector('.time-slider-container');
         
-        if (markers.length === 0 || !container) return;
+        if (markers.length === 0 || !container) {
+            console.warn('Markers or container not found in updateSliderPosition');
+            return;
+        }
 
         // Find the target marker
         const targetMarker = Array.from(markers).find(marker => marker.dataset.value === timeValue);
-        if (!targetMarker) return;
+        if (!targetMarker) {
+            console.warn('Target marker not found for value:', timeValue);
+            return;
+        }
 
         // Get positions relative to container
         const containerRect = container.getBoundingClientRect();
@@ -532,8 +698,276 @@ class GamePicker {
         const markerCenter = markerRect.left + markerRect.width / 2 - containerRect.left;
         const handleOffset = 26; // Half of handle width (52px / 2)
         
-        sliderHandle.style.left = `${markerCenter - handleOffset}px`;
+        const newLeft = markerCenter - handleOffset;
+        console.log('Setting slider position to:', newLeft, 'for time value:', timeValue);
+        sliderHandle.style.left = `${newLeft}px`;
         sliderHandle.dataset.value = timeValue;
+    }
+
+    initSliderDrag() {
+        const sliderHandle = document.querySelector('.slider-handle');
+        const container = document.querySelector('.time-slider-container');
+        
+        if (!sliderHandle || !container) {
+            console.warn('Slider elements not found');
+            return;
+        }
+
+        let isDragging = false;
+        let startX = 0;
+        let startLeft = 0;
+        
+        console.log('Initializing slider drag functionality');
+        
+        // Mouse events
+        sliderHandle.addEventListener('mousedown', (e) => {
+            console.log('Mouse down on slider handle');
+            isDragging = true;
+            startX = e.clientX;
+            
+            // Get current left position, accounting for computed style if inline style isn't set
+            const currentLeft = sliderHandle.style.left ? parseInt(sliderHandle.style.left) : 0;
+            startLeft = currentLeft;
+            console.log('Starting drag from position:', startLeft);
+            
+            // Disable transition during drag for immediate response
+            sliderHandle.style.transition = 'none';
+            sliderHandle.style.cursor = 'grabbing';
+            document.body.style.userSelect = 'none'; // Prevent text selection
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const newLeft = startLeft + deltaX;
+            
+            // Constrain to slider bounds
+            const containerRect = container.getBoundingClientRect();
+            const handleWidth = 52;
+            const minLeft = 0;
+            const maxLeft = containerRect.width - handleWidth;
+            
+            const constrainedLeft = Math.max(minLeft, Math.min(maxLeft, newLeft));
+            sliderHandle.style.left = `${constrainedLeft}px`;
+            
+            // Debug: log position changes occasionally
+            if (Math.abs(deltaX) % 10 === 0) {
+                console.log('Dragging to position:', constrainedLeft);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                console.log('Mouse up - snapping to nearest marker');
+                isDragging = false;
+                
+                // Re-enable transition for smooth snapping
+                sliderHandle.style.transition = 'all 0.2s ease';
+                sliderHandle.style.cursor = 'grab';
+                document.body.style.userSelect = ''; // Re-enable text selection
+                this.snapToNearestMarker();
+            }
+        });
+
+        // Touch events for mobile
+        sliderHandle.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startLeft = parseInt(sliderHandle.style.left) || 0;
+            
+            // Disable transition during drag for immediate response
+            sliderHandle.style.transition = 'none';
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - startX;
+            const newLeft = startLeft + deltaX;
+            
+            // Constrain to slider bounds
+            const containerRect = container.getBoundingClientRect();
+            const handleWidth = 52;
+            const minLeft = 0;
+            const maxLeft = containerRect.width - handleWidth;
+            
+            const constrainedLeft = Math.max(minLeft, Math.min(maxLeft, newLeft));
+            sliderHandle.style.left = `${constrainedLeft}px`;
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                
+                // Re-enable transition for smooth snapping
+                sliderHandle.style.transition = 'all 0.2s ease';
+                this.snapToNearestMarker();
+            }
+        });
+    }
+
+    snapToNearestMarker() {
+        const sliderHandle = document.querySelector('.slider-handle');
+        const container = document.querySelector('.time-slider-container');
+        const markers = document.querySelectorAll('.time-marker');
+        
+        if (!sliderHandle || !container || markers.length === 0) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const handleRect = sliderHandle.getBoundingClientRect();
+        const handleCenter = handleRect.left + handleRect.width / 2 - containerRect.left;
+        
+        let nearestMarker = null;
+        let nearestDistance = Infinity;
+        
+        // Find the nearest marker
+        markers.forEach(marker => {
+            const markerRect = marker.getBoundingClientRect();
+            const markerCenter = markerRect.left + markerRect.width / 2 - containerRect.left;
+            const distance = Math.abs(handleCenter - markerCenter);
+            
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestMarker = marker;
+            }
+        });
+        
+        if (nearestMarker) {
+            // Update active state
+            document.querySelectorAll('.time-marker').forEach(m => m.classList.remove('active'));
+            nearestMarker.classList.add('active');
+            
+            // Snap to marker position
+            const value = nearestMarker.dataset.value;
+            this.updateSliderPosition(value);
+            this.savePreferences();
+        }
+    }
+
+    showLeaderboard() {
+        console.log('Showing leaderboard...');
+        const mainContainer = document.getElementById('main-container');
+        const selectionContent = document.getElementById('selection-content');
+        const resultsContent = document.getElementById('results-content');
+        const leaderboardContent = document.getElementById('leaderboard-content');
+        const leaderboardList = document.getElementById('leaderboard-list');
+        
+        console.log('Elements found:', {
+            mainContainer: !!mainContainer,
+            selectionContent: !!selectionContent, 
+            resultsContent: !!resultsContent,
+            leaderboardContent: !!leaderboardContent,
+            leaderboardList: !!leaderboardList
+        });
+        
+        // Get leaderboard data
+        const leaderboard = this.getLeaderboard();
+        console.log('Leaderboard data:', leaderboard);
+        console.log('Leaderboard length:', leaderboard.length);
+        console.log('First game:', leaderboard[0]);
+        
+        // Create leaderboard cards
+        if (leaderboard.length === 0) {
+            leaderboardList.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #6c757d;">
+                    <h3>No data yet!</h3>
+                    <p>Play some games first to see the leaderboard.</p>
+                </div>
+            `;
+        } else {
+            const html = leaderboard.map((game, index) => 
+                this.createLeaderboardCard(game, index + 1)
+            ).join('');
+            console.log('Generated HTML:', html);
+            leaderboardList.innerHTML = html;
+        }
+        
+        // Hide other content and show leaderboard immediately 
+        selectionContent.style.display = 'none';
+        resultsContent.style.display = 'none';
+        leaderboardContent.style.display = 'flex';
+        
+        // Let container naturally adjust to leaderboard content size
+        mainContainer.style.height = 'auto';
+        
+        // Debug the visibility
+        console.log('Leaderboard content style:', leaderboardContent.style.display);
+        console.log('Leaderboard content offsetHeight:', leaderboardContent.offsetHeight);
+        console.log('Leaderboard list innerHTML length:', leaderboardList.innerHTML.length);
+        
+        console.log('Leaderboard should now be visible');
+        
+        // Force visibility of result cards (they might have opacity: 0 from CSS)
+        setTimeout(() => {
+            const resultCards = leaderboardContent.querySelectorAll('.result-card');
+            resultCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            });
+        }, 100);
+    }
+
+    createLeaderboardCard(game, rank) {
+        const isSaved = this.savedGames.includes(game.id);
+        const saveButtonText = isSaved ? '❤️ SAVED' : 'SAVE GAME';
+        const saveButtonClass = isSaved ? 'saved' : '';
+        
+        return `
+            <div class="result-card">
+                <div class="leaderboard-rank">
+                    <span>${rank}</span>
+                </div>
+                <div class="result-info">
+                    <div class="result-header">
+                        <h3 class="result-title">${game.name}</h3>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="save-btn ${saveButtonClass}" onclick="gamePicker.toggleSavedGame('${game.id}')">
+                        ${saveButtonText}
+                    </button>
+                    <a href="${game.url}" target="_blank" rel="noopener noreferrer" class="play-now-btn" onclick="gamePicker.trackGameClick('${game.id}')">
+                        PLAY NOW
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+
+    shareLeaderboard() {
+        const leaderboard = this.getLeaderboard();
+        
+        if (leaderboard.length === 0) {
+            alert('No leaderboard data to share!');
+            return;
+        }
+
+        // Create a shareable text
+        const gamesList = leaderboard.map((game, index) => 
+            `${index + 1}. ${game.name} (${game.clickCount} clicks)\n   ${game.url}`
+        ).join('\n\n');
+        
+        const shareText = `Top 10 Most Popular Games:\n\n${gamesList}\n\nGenerated by Daily Puzzle Picker`;
+        
+        // Try to use Web Share API if available
+        if (navigator.share) {
+            navigator.share({
+                title: 'Top 10 Most Popular Games',
+                text: shareText
+            }).catch(() => {
+                // Fallback to clipboard
+                this.copyToClipboard(shareText);
+            });
+        } else {
+            // Fallback to clipboard
+            this.copyToClipboard(shareText);
+        }
     }
 }
 

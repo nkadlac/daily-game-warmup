@@ -16,74 +16,93 @@
             <p>Create a new daily game routine</p>
         </div>
 
-        <div class="main-card">
-            <div class="theme-section">
-                <h3>What games do you love? <span class="select-multiple">(Select Multiple)</span></h3>
-                <div class="theme-buttons">
-                    <button class="theme-btn active" data-theme="word">
-                        <div class="theme-icon"></div>
-                        <span>WORD</span>
-                    </button>
-                    <button class="theme-btn" data-theme="number">
-                        <div class="theme-icon"></div>
-                        <span>NUMBER</span>
-                    </button>
-                    <button class="theme-btn" data-theme="logic">
-                        <div class="theme-icon"></div>
-                        <span>LOGIC</span>
-                    </button>
-                    <button class="theme-btn" data-theme="geography">
-                        <div class="theme-icon"></div>
-                        <span>GEOGRAPHY</span>
-                    </button>
-                    <button class="theme-btn" data-theme="trivia">
-                        <div class="theme-icon"></div>
-                        <span>TRIVIA</span>
-                    </button>
+        <div class="main-card" id="main-container">
+            <!-- Selection Content -->
+            <div class="main-card-content fade-in" id="selection-content">
+                <div class="theme-section">
+                    <h3>What games do you love? <span class="select-multiple">(Select Multiple)</span></h3>
+                    <div class="theme-buttons">
+                        <button class="theme-btn active" data-theme="word">
+                            <div class="theme-icon"></div>
+                            <span>WORD</span>
+                        </button>
+                        <button class="theme-btn" data-theme="number">
+                            <div class="theme-icon"></div>
+                            <span>NUMBER</span>
+                        </button>
+                        <button class="theme-btn" data-theme="logic">
+                            <div class="theme-icon"></div>
+                            <span>LOGIC</span>
+                        </button>
+                        <button class="theme-btn" data-theme="geography">
+                            <div class="theme-icon"></div>
+                            <span>GEOGRAPHY</span>
+                        </button>
+                        <button class="theme-btn" data-theme="trivia">
+                            <div class="theme-icon"></div>
+                            <span>TRIVIA</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="time-section">
-                <h3>How much time do you have?</h3>
-                <div class="time-slider-container">
-                    <div class="slider-track"></div>
-                    <div class="slider-handle" data-value="10"></div>
-                    <div class="time-markers">
-                        <div class="time-marker" data-value="5">
-                            <div class="marker-dot"></div>
-                            <span>5 MIN</span>
-                        </div>
-                        <div class="time-marker active" data-value="10">
-                            <div class="marker-dot"></div>
-                            <span>10 MIN</span>
-                        </div>
-                        <div class="time-marker" data-value="20">
-                            <div class="marker-dot"></div>
-                            <span>20 MIN</span>
-                        </div>
-                        <div class="time-marker" data-value="all">
-                            <div class="marker-dot"></div>
-                            <span>All DAY</span>
+                <div class="time-section">
+                    <h3>How much time do you have?</h3>
+                    <div class="time-slider-container">
+                        <div class="slider-track"></div>
+                        <div class="slider-handle" data-value="10"></div>
+                        <div class="time-markers">
+                            <div class="time-marker" data-value="5">
+                                <div class="marker-dot"></div>
+                                <span>5 MIN</span>
+                            </div>
+                            <div class="time-marker active" data-value="10">
+                                <div class="marker-dot"></div>
+                                <span>10 MIN</span>
+                            </div>
+                            <div class="time-marker" data-value="20">
+                                <div class="marker-dot"></div>
+                                <span>20 MIN</span>
+                            </div>
+                            <div class="time-marker" data-value="all">
+                                <div class="marker-dot"></div>
+                                <span>All DAY</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button id="get-recommendations" class="reveal-button">REVEAL MY PICKS</button>
             </div>
 
-            <button id="get-recommendations" class="reveal-button">REVEAL MY PICKS</button>
-        </div>
-
-        <!-- Results view - hidden by default -->
-        <div class="main-card results-card" id="results-view" style="display: none;">
-            <h2>Your picks for today</h2>
-            <p class="results-subtitle">Ranked from easiest to most difficult</p>
-            
-            <div class="results-list" id="results-list">
-                <!-- Game cards will be inserted here -->
+            <!-- Results Content - hidden by default -->
+            <div class="main-card-content" id="results-content" style="display: none;">
+                <h2 class="results-title">Your picks for today</h2>
+                <p class="results-subtitle">Ranked from easiest to most difficult</p>
+                
+                <div class="results-list" id="results-list">
+                    <!-- Game cards will be inserted here -->
+                </div>
+                
+                <div class="results-actions">
+                    <button id="get-new-picks" class="secondary-btn">GET NEW PICKS</button>
+                    <button id="view-leaderboard" class="secondary-btn">VIEW LEADERBOARD</button>
+                    <button id="share-list" class="primary-btn">SHARE THIS LIST</button>
+                </div>
             </div>
-            
-            <div class="results-actions">
-                <button id="get-new-picks" class="secondary-btn">GET NEW PICKS</button>
-                <button id="share-list" class="primary-btn">SHARE THIS LIST</button>
+
+            <!-- Leaderboard Content - hidden by default -->
+            <div class="main-card-content" id="leaderboard-content" style="display: none;">
+                <h2 class="results-title">Top 10 Leaderboard!</h2>
+                <p class="results-subtitle">Most clicked games from results</p>
+                
+                <div class="results-list" id="leaderboard-list">
+                    <!-- Leaderboard cards will be inserted here -->
+                </div>
+                
+                <div class="results-actions">
+                    <button id="back-home" class="secondary-btn">← BACK HOME</button>
+                    <button id="share-leaderboard" class="primary-btn">SHARE THIS LIST</button>
+                </div>
             </div>
         </div>
     </div>

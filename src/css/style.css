@@ -4,44 +4,32 @@
     box-sizing: border-box;
 }
 
+
 body {
     font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #000000;
-    background: #ff6741;
+    background: linear-gradient(135deg, #FF7A47 0%, #FF6B3D 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     padding: 96px 0;
     position: relative;
 }
 
 body::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    right: -30%;
-    bottom: -30%;
-    background: radial-gradient(ellipse at top left, rgba(255, 160, 84, 1) 0%, rgba(255, 160, 84, 0.7) 30%, rgba(255, 160, 84, 0.3) 50%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-body::after {
-    content: '';
-    position: absolute;
+    content: "";
+    background-color: transparent;
+    background-image: url('../../assets/noise-texture.png');
+    background-repeat: repeat;
+    background-size: 310px 310px;
+    opacity: 1;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('http://localhost:3845/assets/cd39d8d4187e47004c8f8d8aee23e74fb4f01357.png');
-    background-repeat: repeat;
-    background-size: 310.648px 310.648px;
-    background-position: top left;
-    mix-blend-mode: multiply;
-    opacity: 0.2;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 1;
 }
@@ -93,6 +81,9 @@ body::after {
     flex-direction: column;
     align-items: center;
     gap: 32px;
+    transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    position: relative;
 }
 
 .main-card h2 {
@@ -198,10 +189,17 @@ body::after {
     width: 52px;
     height: 52px;
     background-color: #7edc64;
+    border: 8px solid #ffffff;
     border-radius: 50%;
-    cursor: pointer;
+    cursor: grab;
     transition: all 0.2s ease;
-    z-index: 2;
+    z-index: 10;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+    user-select: none;
+}
+
+.slider-handle:active {
+    cursor: grabbing;
 }
 
 .time-markers {
@@ -209,7 +207,7 @@ body::after {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 430px;
+    width: 480px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -226,16 +224,12 @@ body::after {
 .marker-dot {
     width: 34px;
     height: 34px;
-    background-color: #cccccc;
+    background-color: #F1F1F1;
     border-radius: 50%;
     transition: all 0.2s ease;
-    margin-top: 21px;
+    margin-top: 24px;
 }
 
-.time-marker.active .marker-dot {
-    opacity: 0;
-    pointer-events: none;
-}
 
 .time-marker span {
     font-family: 'Nunito Sans', sans-serif;
@@ -252,44 +246,27 @@ body::after {
     background-color: #7edc64;
     border: 2px solid #150c09;
     border-radius: 6px;
-    position: relative;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0px -2px 0px 0px #150c09 inset;
-}
-
-.reveal-button::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 2px;
-    right: -2px;
-    top: 2px;
-    background-color: #150c09;
-    border-radius: 6px;
-    z-index: -1;
-}
-
-.reveal-button {
+    transition: all 0.1s ease;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 800;
     font-size: 14px;
     color: #000000;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    box-shadow: 2px 4px 0px 0px #150c09;
 }
 
 .reveal-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0px -3px 0px 0px #150c09 inset;
+    background-color: #63CE46;
+    transform: translateY(-3px);
+    box-shadow: 4px 8px 0px 0px #150c09;
 }
 
 .reveal-button:active {
-    transform: translateY(1px);
-    box-shadow: 0px -1px 0px 0px #150c09 inset;
+    background-color: #6bd147;
+    transform: translateY(2px);
+    box-shadow: 0px 2px 0px 0px #150c09;
 }
 
 .secondary-button {
@@ -454,9 +431,90 @@ body::after {
     font-style: italic;
 }
 
+/* Content transition styles */
+.main-card-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+}
+
+/* Selection elements fade out animation */
+.theme-section, .time-section, .reveal-button {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.theme-section.fade-out {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+.time-section.fade-out {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+.reveal-button.fade-out {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+
+/* Results elements fade in animation */
+.results-title, .results-subtitle, .results-list, .results-actions {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Leaderboard specific overrides */
+#leaderboard-content .results-title, 
+#leaderboard-content .results-subtitle, 
+#leaderboard-content .results-list, 
+#leaderboard-content .results-actions,
+#leaderboard-content .result-card {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.results-title.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.results-subtitle.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.results-list.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.results-actions.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* Results View Styles */
-.results-card {
-    /* Inherits main-card styles automatically */
+
+.result-card {
+    background-color: #f4f4f4;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.result-card.fade-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .results-card h2 {
@@ -485,15 +543,6 @@ body::after {
     gap: 16px;
 }
 
-.result-card {
-    background-color: #f4f4f4;
-    border-radius: 16px;
-    padding: 16px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    width: 100%;
-}
 
 .result-number {
     width: 49px;
@@ -512,6 +561,64 @@ body::after {
     font-size: 14px;
     color: #ffffff;
     text-transform: uppercase;
+}
+
+.leaderboard-rank {
+    width: 32px;
+    height: 32px;
+    background-color: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.leaderboard-rank span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.save-btn {
+    width: 116px;
+    height: 44px;
+    background-color: #ffffff;
+    border: 2px solid #150c09;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: #000000;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 0px 0px #150c09;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    background-color: #f8f8f8;
+    box-shadow: 4px 8px 0px 0px #150c09;
+}
+
+.save-btn:active {
+    transform: translateY(2px);
+    background-color: #e8e8e8;
+    box-shadow: 0px 2px 0px 0px #150c09;
+}
+
+.save-btn.saved {
+    background-color: #ff9d9d;
+    color: #000000;
+}
+
+.save-btn.saved:hover {
+    background-color: #ff8a8a;
 }
 
 .result-info {
@@ -601,9 +708,8 @@ body::after {
     background-color: #7edc64;
     border: 2px solid #150c09;
     border-radius: 6px;
-    position: relative;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 800;
     font-size: 14px;
@@ -613,35 +719,37 @@ body::after {
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    box-shadow: 2px 4px 0px 0px #150c09;
 }
 
-.play-now-btn::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 2px;
-    right: -2px;
-    top: 2px;
-    background-color: #150c09;
-    border-radius: 6px;
-    z-index: -1;
+.play-now-btn:hover {
+    transform: translateY(-3px);
+    background-color: #63CE46;
+    box-shadow: 4px 8px 0px 0px #150c09;
+}
+
+.play-now-btn:active {
+    transform: translateY(2px);
+    background-color: #6bd147;
+    box-shadow: 0px 2px 0px 0px #150c09;
 }
 
 .results-actions {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    gap: 16px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .secondary-btn, .primary-btn {
-    width: 170px;
+    flex: 1;
+    min-width: 140px;
     height: 44px;
     border: 2px solid #150c09;
     border-radius: 6px;
-    position: relative;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.1s ease;
     font-family: 'Nunito Sans', sans-serif;
     font-weight: 800;
     font-size: 14px;
@@ -649,18 +757,31 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 2px 4px 0px 0px #150c09;
 }
 
-.secondary-btn::before, .primary-btn::before {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 2px;
-    right: -2px;
-    top: 2px;
-    background-color: #150c09;
-    border-radius: 6px;
-    z-index: -1;
+.secondary-btn:hover {
+    transform: translateY(-3px);
+    background-color: #f8f8f8;
+    box-shadow: 4px 8px 0px 0px #150c09;
+}
+
+.secondary-btn:active {
+    transform: translateY(2px);
+    background-color: #e8e8e8;
+    box-shadow: 0px 2px 0px 0px #150c09;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    background-color: #63CE46;
+    box-shadow: 4px 8px 0px 0px #150c09;
+}
+
+.primary-btn:active {
+    transform: translateY(2px);
+    background-color: #6bd147;
+    box-shadow: 0px 2px 0px 0px #150c09;
 }
 
 .secondary-btn {
@@ -735,10 +856,6 @@ body::after {
         height: 28px;
     }
     
-    .time-marker.active .marker-dot {
-        width: 40px;
-        height: 40px;
-    }
     
     .time-marker span {
         font-size: 14px;
