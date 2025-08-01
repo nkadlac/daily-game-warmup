@@ -11,6 +11,14 @@ class GamePicker {
         this.loadSavedGames();
         this.updateTimeBasedContent();
         this.bindEvents();
+        
+        // Initialize slider position after everything is loaded
+        setTimeout(() => {
+            const activeMarker = document.querySelector('.time-marker.active');
+            if (activeMarker) {
+                this.updateSliderPosition(activeMarker.dataset.value);
+            }
+        }, 100);
     }
 
     async loadGames() {
@@ -506,16 +514,25 @@ class GamePicker {
         const sliderHandle = document.querySelector('.slider-handle');
         if (!sliderHandle) return;
 
-        // Position mapping based on time values - adjusted for better centering
-        const positions = {
-            '5': 'calc(50% - 215px)',
-            '10': 'calc(50% - 72px)', 
-            '20': 'calc(50% + 72px)',
-            'all': 'calc(50% + 215px)'
-        };
+        // Get the time markers to calculate exact positions
+        const markers = document.querySelectorAll('.time-marker');
+        const container = document.querySelector('.time-slider-container');
+        
+        if (markers.length === 0 || !container) return;
 
-        const position = positions[timeValue] || positions['10'];
-        sliderHandle.style.left = position;
+        // Find the target marker
+        const targetMarker = Array.from(markers).find(marker => marker.dataset.value === timeValue);
+        if (!targetMarker) return;
+
+        // Get positions relative to container
+        const containerRect = container.getBoundingClientRect();
+        const markerRect = targetMarker.getBoundingClientRect();
+        
+        // Calculate center position of the marker relative to container
+        const markerCenter = markerRect.left + markerRect.width / 2 - containerRect.left;
+        const handleOffset = 26; // Half of handle width (52px / 2)
+        
+        sliderHandle.style.left = `${markerCenter - handleOffset}px`;
         sliderHandle.dataset.value = timeValue;
     }
 }
