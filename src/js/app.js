@@ -25,24 +25,53 @@ class GamePicker {
 
     bindEvents() {
         const getRecommendationsBtn = document.getElementById('get-recommendations');
-        const getNewRecommendationsBtn = document.getElementById('get-new-recommendations');
+        const getNewPicksBtn = document.getElementById('get-new-picks');
+        const shareListBtn = document.getElementById('share-list');
 
         getRecommendationsBtn.addEventListener('click', () => this.getRecommendations());
-        getNewRecommendationsBtn.addEventListener('click', () => this.getRecommendations());
+        if (getNewPicksBtn) {
+            getNewPicksBtn.addEventListener('click', () => this.showSelectionView());
+        }
+        if (shareListBtn) {
+            shareListBtn.addEventListener('click', () => this.shareList());
+        }
 
-        // Save preferences when they change
-        document.querySelectorAll('input[name="gameType"]').forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.savePreferences());
+        // Theme button selection
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Remove active class from all buttons
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                this.savePreferences();
+            });
         });
 
-        document.getElementById('time-commitment').addEventListener('change', () => this.savePreferences());
+        // Time marker selection
+        document.querySelectorAll('.time-marker').forEach(marker => {
+            marker.addEventListener('click', () => {
+                // Remove active class from all markers
+                document.querySelectorAll('.time-marker').forEach(m => m.classList.remove('active'));
+                // Add active class to clicked marker
+                marker.classList.add('active');
+                
+                // Update slider handle position
+                const value = marker.dataset.value;
+                this.updateSliderPosition(value);
+                this.savePreferences();
+            });
+        });
     }
 
     getPreferences() {
-        const gameTypes = Array.from(document.querySelectorAll('input[name="gameType"]:checked'))
-            .map(input => input.value);
+        // Get selected theme
+        const activeTheme = document.querySelector('.theme-btn.active');
+        const gameTypes = activeTheme ? [activeTheme.dataset.theme] : ['word'];
         
-        const timeCommitment = parseInt(document.getElementById('time-commitment').value);
+        // Get selected time from active marker
+        const activeTimeMarker = document.querySelector('.time-marker.active');
+        const timeValue = activeTimeMarker ? activeTimeMarker.dataset.value : '10';
+        const timeCommitment = timeValue === 'all' ? 60 : parseInt(timeValue);
         const gameCount = this.calculateGameCount(timeCommitment);
 
         return {
@@ -60,7 +89,17 @@ class GamePicker {
 
     filterGames(preferences) {
         return this.games.filter(game => {
-            return preferences.gameTypes.includes(game.type);
+            // Map theme names to game types
+            const themeToTypeMap = {
+                'word': 'word',
+                'number': 'math',
+                'logic': 'logic', 
+                'geography': 'geography',
+                'trivia': 'trivia'
+            };
+            
+            const mappedTypes = preferences.gameTypes.map(theme => themeToTypeMap[theme] || theme);
+            return mappedTypes.includes(game.type);
         });
     }
 
@@ -167,14 +206,20 @@ class GamePicker {
     }
 
     applyPreferences(preferences) {
-        // Set game type checkboxes
-        document.querySelectorAll('input[name="gameType"]').forEach(checkbox => {
-            checkbox.checked = preferences.gameTypes.includes(checkbox.value);
-        });
+        // Set active theme button
+        if (preferences.gameTypes && preferences.gameTypes.length > 0) {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', preferences.gameTypes.includes(btn.dataset.theme));
+            });
+        }
 
-        // Set time commitment
+        // Set active time marker and slider position
         if (preferences.timeCommitment) {
-            document.getElementById('time-commitment').value = preferences.timeCommitment;
+            const timeValue = preferences.timeCommitment >= 60 ? 'all' : preferences.timeCommitment.toString();
+            document.querySelectorAll('.time-marker').forEach(marker => {
+                marker.classList.toggle('active', marker.dataset.value === timeValue);
+            });
+            this.updateSliderPosition(timeValue);
         }
     }
 
@@ -203,15 +248,75 @@ class GamePicker {
         }
         this.saveSavedGames();
         
-        // Refresh the current recommendations to update the UI
-        const recommendations = document.getElementById('recommendations');
-        if (recommendations.style.display !== 'none') {
-            const currentGames = Array.from(document.querySelectorAll('.game-card')).map(card => {
-                const title = card.querySelector('.game-title').textContent;
+        // Refresh the current view to update the UI
+        const resultsView = document.getElementById('results-view');
+        if (resultsView.style.display !== 'none') {
+            const currentGames = Array.from(document.querySelectorAll('.result-card')).map(card => {
+                const title = card.querySelector('.result-title').textContent;
                 return this.games.find(game => game.name === title);
             }).filter(Boolean);
             this.displayRecommendations(currentGames);
         }
+    }
+
+    shareList() {
+        // Get current games from results view
+        const currentGames = Array.from(document.querySelectorAll('.result-card')).map(card => {
+            const title = card.querySelector('.result-title').textContent;
+            return this.games.find(game => game.name === title);
+        }).filter(Boolean);
+
+        if (currentGames.length === 0) {
+            alert('No games to share!');
+            return;
+        }
+
+        // Create a shareable text
+        const gamesList = currentGames.map((game, index) => 
+            `${index + 1}. ${game.name} (${game.timeMinutes} min, ${game.difficulty})\n   ${game.url}`
+        ).join('\n\n');
+        
+        const shareText = `My Daily Puzzle Picks:\n\n${gamesList}\n\nGenerated by Daily Puzzle Picker`;
+        
+        // Try to use Web Share API if available
+        if (navigator.share) {
+            navigator.share({
+                title: 'My Daily Puzzle Picks',
+                text: shareText
+            }).catch(() => {
+                // Fallback to clipboard
+                this.copyToClipboard(shareText);
+            });
+        } else {
+            // Fallback to clipboard
+            this.copyToClipboard(shareText);
+        }
+    }
+
+    copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Game list copied to clipboard!');
+            }).catch(() => {
+                this.fallbackCopyToClipboard(text);
+            });
+        } else {
+            this.fallbackCopyToClipboard(text);
+        }
+    }
+
+    fallbackCopyToClipboard(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert('Game list copied to clipboard!');
+        } catch (err) {
+            alert('Unable to copy to clipboard. Please copy manually:\n\n' + text);
+        }
+        document.body.removeChild(textArea);
     }
 
     getRecommendations() {
@@ -241,29 +346,38 @@ class GamePicker {
     }
 
     showNoGamesMessage() {
-        const recommendationsSection = document.getElementById('recommendations');
-        const gameList = document.getElementById('game-list');
+        const mainCard = document.querySelector('.main-card');
+        const resultsView = document.getElementById('results-view');
+        const resultsList = document.getElementById('results-list');
         
-        gameList.innerHTML = `
+        resultsList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: #6c757d;">
                 <h3>No games found!</h3>
                 <p>Try adjusting your preferences - maybe increase your time commitment or select different game types.</p>
             </div>
         `;
         
-        recommendationsSection.style.display = 'block';
-        recommendationsSection.scrollIntoView({ behavior: 'smooth' });
+        mainCard.style.display = 'none';
+        resultsView.style.display = 'flex';
     }
 
     displayRecommendations(games) {
-        const recommendationsSection = document.getElementById('recommendations');
-        const gameList = document.getElementById('game-list');
+        // Hide the main card and show results view
+        const mainCard = document.querySelector('.main-card');
+        const resultsView = document.getElementById('results-view');
+        const resultsList = document.getElementById('results-list');
+        const resultsTitle = resultsView.querySelector('h2');
+
+        // Get current time selection and update header
+        const preferences = this.getPreferences();
+        const timeText = preferences.timeCommitment >= 60 ? 'all day' : `${preferences.timeCommitment} min`;
+        resultsTitle.textContent = `Your ${timeText} play list`;
 
         const sortedGames = this.sortGamesByDifficulty(games);
-        gameList.innerHTML = sortedGames.map(game => this.createGameCard(game)).join('');
+        resultsList.innerHTML = sortedGames.map((game, index) => this.createResultCard(game, index + 1)).join('');
         
-        recommendationsSection.style.display = 'block';
-        recommendationsSection.scrollIntoView({ behavior: 'smooth' });
+        mainCard.style.display = 'none';
+        resultsView.style.display = 'flex';
     }
 
     sortGamesByDifficulty(games) {
@@ -271,6 +385,38 @@ class GamePicker {
         return [...games].sort((a, b) => {
             return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty];
         });
+    }
+
+    createResultCard(game, number) {
+        const isSaved = this.savedGames.includes(game.id);
+        const starIcon = isSaved ? '⭐️' : '☆';
+        
+        return `
+            <div class="result-card">
+                <div class="result-number">
+                    <span>${number}</span>
+                </div>
+                <div class="result-info">
+                    <div class="result-header">
+                        <h3 class="result-title">${game.name}</h3>
+                        <p class="result-description">${game.description}</p>
+                    </div>
+                    <div class="result-tags">
+                        <span class="result-tag">${game.timeMinutes} MIN</span>
+                        <span class="result-tag">${game.difficulty.toUpperCase()}</span>
+                        <span class="result-tag">${game.type.toUpperCase()}</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="star-btn" onclick="gamePicker.toggleSavedGame('${game.id}')">
+                        ${starIcon}
+                    </button>
+                    <a href="${game.url}" target="_blank" rel="noopener noreferrer" class="play-now-btn">
+                        PLAY NOW
+                    </a>
+                </div>
+            </div>
+        `;
     }
 
     createGameCard(game) {
@@ -342,21 +488,32 @@ class GamePicker {
     }
 
     updateTimeBasedContent() {
-        const content = this.getTimeBasedContent();
+        // Content is now static based on Figma design, no need to update dynamically
+    }
+
+    showSelectionView() {
+        const mainCard = document.querySelector('.main-card');
+        const resultsView = document.getElementById('results-view');
         
-        // Update header
-        document.querySelector('header h1').textContent = content.title;
-        document.querySelector('header p').textContent = content.subtitle;
-        
-        // Update section title
-        document.querySelector('.preferences h2').textContent = content.sectionTitle;
-        
-        // Update buttons
-        document.getElementById('get-recommendations').textContent = content.buttonText;
-        document.getElementById('get-new-recommendations').textContent = content.newGamesButton;
-        
-        // Update results title
-        document.querySelector('.recommendations h2').textContent = content.resultsTitle;
+        resultsView.style.display = 'none';
+        mainCard.style.display = 'flex';
+    }
+
+    updateSliderPosition(timeValue) {
+        const sliderHandle = document.querySelector('.slider-handle');
+        if (!sliderHandle) return;
+
+        // Position mapping based on time values - adjusted for better centering
+        const positions = {
+            '5': 'calc(50% - 215px)',
+            '10': 'calc(50% - 72px)', 
+            '20': 'calc(50% + 72px)',
+            'all': 'calc(50% + 215px)'
+        };
+
+        const position = positions[timeValue] || positions['10'];
+        sliderHandle.style.left = position;
+        sliderHandle.dataset.value = timeValue;
     }
 }
 
