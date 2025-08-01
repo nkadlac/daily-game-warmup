@@ -1,0 +1,336 @@
+[
+  {
+    "id": "wordle",
+    "name": "Wordle",
+    "type": "word",
+    "difficulty": "easy",
+    "timeMinutes": 5,
+    "description": "Guess the 5-letter word in 6 tries. A new puzzle every day!",
+    "url": "https://www.nytimes.com/games/wordle/index.html"
+  },
+  {
+    "id": "connections",
+    "name": "Connections",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Find groups of four items that share something in common.",
+    "url": "https://www.nytimes.com/games/connections"
+  },
+  {
+    "id": "crosswordle",
+    "name": "Crosswordle",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 5,
+    "description": "A crossword puzzle meets Wordle. Fill in the crossword grid!",
+    "url": "https://crosswordle.com",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "sumplete-daily",
+    "name": "Sumplete 5x5",
+    "type": "math",
+    "difficulty": "medium",
+    "timeMinutes": 2,
+    "description": "Delete numbers so the remaining numbers add up to the target sum (5x5 grid).",
+    "url": "https://sumplete.com/daily",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "sumplete-master",
+    "name": "Sumplete 7x7",
+    "type": "math",
+    "difficulty": "hard",
+    "timeMinutes": 8,
+    "description": "Delete numbers so the remaining numbers add up to the target sum (7x7 grid).",
+    "url": "https://sumplete.com/master",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "mathler-easy",
+    "name": "Mathler Easy",
+    "type": "math",
+    "difficulty": "easy",
+    "timeMinutes": 5,
+    "description": "Find the hidden calculation that equals the target number.",
+    "url": "https://www.mathler.com/easy",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "mathler-normal",
+    "name": "Mathler",
+    "type": "math",
+    "difficulty": "medium",
+    "timeMinutes": 5,
+    "description": "Find the hidden calculation that equals the target number.",
+    "url": "https://www.mathler.com/normal",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "mathler-hard",
+    "name": "Mathler Hard",
+    "type": "math",
+    "difficulty": "hard",
+    "timeMinutes": 5,
+    "description": "Find the hidden calculation that equals the target number.",
+    "url": "https://www.mathler.com/hard",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "mathler-killer",
+    "name": "Mathler Killer",
+    "type": "math",
+    "difficulty": "advanced",
+    "timeMinutes": 5,
+    "description": "Find the hidden calculation that equals the target number.",
+    "url": "https://www.mathler.com/hard",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "linkedin-queens",
+    "name": "Queens",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Place queens on the board so none can attack each other.",
+    "url": "https://www.linkedin.com/games/queens/"
+  },
+  {
+    "id": "kakuro-conquest",
+    "name": "Kakuro Conquest",
+    "type": "math",
+    "difficulty": "hard",
+    "timeMinutes": 20,
+    "description": "Fill the grid with numbers that add up to the given sums.",
+    "url": "https://www.kakuroconquest.com/",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "sudoku",
+    "name": "Sudoku.com",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 15,
+    "description": "Classic number puzzle - fill the 9x9 grid with digits 1-9.",
+    "url": "https://sudoku.com/"
+  },
+  {
+    "id": "hitori-conquest",
+    "name": "Hitori Conquest",
+    "type": "puzzle",
+    "difficulty": "hard",
+    "timeMinutes": 25,
+    "description": "Eliminate numbers to ensure no duplicates in any row or column.",
+    "url": "https://www.hitoriconquest.com/",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "linkedin-tango",
+    "name": "Tango",
+    "type": "puzzle",
+    "difficulty": "easy",
+    "timeMinutes": 5,
+    "description": "Match pairs by connecting them with a path of no more than 3 lines.",
+    "url": "https://www.linkedin.com/games/tango/"
+  },
+  {
+    "id": "waffle",
+    "name": "Waffle",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Swap letters to make valid words in this crossword-style puzzle.",
+    "url": "https://wafflegame.net/"
+  },
+  {
+    "id": "word-salad",
+    "name": "Word Salad",
+    "type": "word",
+    "difficulty": "easy",
+    "timeMinutes": 8,
+    "description": "Find hidden words in a jumbled grid of letters.",
+    "url": "https://wordsalad.online/"
+  },
+  {
+    "id": "squeezy",
+    "name": "Squeezy",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 12,
+    "description": "Squeeze the blocks together to match the target pattern.",
+    "url": "https://imsqueezy.com/"
+  },
+  {
+    "id": "letter-boxed",
+    "name": "Letter Boxed",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Connect letters around the box to form words that use all letters.",
+    "url": "https://www.nytimes.com/puzzles/letter-boxed"
+  },
+  {
+    "id": "quordle",
+    "name": "Quordle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 15,
+    "description": "Solve four Wordles at once with nine guesses.",
+    "url": "https://www.quordle.com/"
+  },
+  {
+    "id": "octordle",
+    "name": "Octordle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 20,
+    "description": "Solve eight Wordles simultaneously with 13 guesses.",
+    "url": "https://octordle.com/"
+  },
+  {
+    "id": "sedecordle",
+    "name": "Sedecordle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 25,
+    "description": "The ultimate challenge - solve 16 Wordles at once!",
+    "url": "https://www.sedecordle.com/"
+  },
+  {
+    "id": "duotrigordle",
+    "name": "Duotrigordle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 35,
+    "description": "Extreme Wordle variant - solve 32 puzzles simultaneously.",
+    "url": "https://duotrigordle.com/"
+  },
+  {
+    "id": "globle",
+    "name": "Globle",
+    "type": "geography",
+    "difficulty": "medium",
+    "timeMinutes": 6,
+    "description": "Guess the mystery country using distance clues on a globe.",
+    "url": "https://globle-game.com/"
+  },
+  {
+    "id": "metazooa",
+    "name": "Metazooa",
+    "type": "trivia",
+    "difficulty": "medium",
+    "timeMinutes": 8,
+    "description": "Guess the animal based on close-up photos and clues.",
+    "url": "https://metazooa.com/"
+  },
+  {
+    "id": "wikigame-daily",
+    "name": "WikiGame Daily",
+    "type": "trivia",
+    "difficulty": "medium",
+    "timeMinutes": 15,
+    "description": "Navigate from one Wikipedia page to another using only links.",
+    "url": "https://thewikigamedaily.com/",
+    "publisher": "Hey Good Game"
+  },
+  {
+    "id": "canuckle",
+    "name": "Canuckle",
+    "type": "word",
+    "difficulty": "easy",
+    "timeMinutes": 5,
+    "description": "Canadian-themed Wordle with uniquely Canadian words and references.",
+    "url": "https://www.canucklegame.ca/"
+  },
+  {
+    "id": "strands",
+    "name": "Strands",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Find themed words that connect across the letter grid.",
+    "url": "https://www.nytimes.com/games/strands"
+  },
+  {
+    "id": "contexto",
+    "name": "Contexto",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 8,
+    "description": "Guess the secret word using contextual similarity clues.",
+    "url": "https://contexto.me/"
+  },
+  {
+    "id": "couples",
+    "name": "Couples",
+    "type": "logic",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Match pairs based on logical relationships and patterns.",
+    "url": "https://www.couples.game/"
+  },
+  {
+    "id": "dordle",
+    "name": "Dordle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 10,
+    "description": "Solve two Wordles simultaneously with seven guesses.",
+    "url": "https://zaratustra.itch.io/dordle"
+  },
+  {
+    "id": "murdle",
+    "name": "Murdle",
+    "type": "logic",
+    "difficulty": "medium",
+    "timeMinutes": 12,
+    "description": "Solve daily murder mystery logic puzzles with deductive reasoning.",
+    "url": "https://murdle.com/"
+  },
+  {
+    "id": "semantle",
+    "name": "Semantle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 15,
+    "description": "Guess the secret word using semantic similarity scores.",
+    "url": "https://semantle.com/"
+  },
+  {
+    "id": "cell-tower",
+    "name": "Cell Tower",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 12,
+    "description": "Place numbers in a grid so each region contains consecutive numbers.",
+    "url": "https://www.andrewt.net/puzzles/cell-tower/"
+  },
+  {
+    "id": "worldle",
+    "name": "Worldle",
+    "type": "geography",
+    "difficulty": "medium",
+    "timeMinutes": 5,
+    "description": "Guess the country based on its silhouette with distance and direction clues.",
+    "url": "https://worldle.teuteuf.fr/"
+  },
+  {
+    "id": "2048",
+    "name": "2048",
+    "type": "puzzle",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Slide numbered tiles to combine them and reach the 2048 tile.",
+    "url": "https://play2048.co/"
+  },
+  {
+    "id": "nerdle",
+    "name": "Nerdle",
+    "type": "math",
+    "difficulty": "medium",
+    "timeMinutes": 5,
+    "description": "Guess the hidden mathematical equation in 6 tries.",
+    "url": "https://nerdlegame.com/"
+  }
+]

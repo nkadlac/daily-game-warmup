@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Game Warm-Up</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Daily Game Warm-Up</h1>
+        <p>Start your day with brain-boosting games tailored to your morning routine</p>
+    </header>
+
+    <main>
+        <section class="preferences">
+            <h2>Customize Your Morning Routine</h2>
+            
+            <div class="preference-group">
+                <label for="game-types">Game Types:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="gameType" value="word" checked> Word Games</label>
+                    <label><input type="checkbox" name="gameType" value="logic" checked> Logic Games</label>
+                    <label><input type="checkbox" name="gameType" value="math" checked> Math Games</label>
+                    <label><input type="checkbox" name="gameType" value="puzzle" checked> Puzzle Games</label>
+                    <label><input type="checkbox" name="gameType" value="geography" checked> Geography</label>
+                    <label><input type="checkbox" name="gameType" value="trivia" checked> Trivia</label>
+                </div>
+            </div>
+
+            <div class="preference-group">
+                <label for="time-commitment">Time Available:</label>
+                <select id="time-commitment">
+                    <option value="5">5 minutes</option>
+                    <option value="15" selected>10-15 minutes</option>
+                    <option value="20">20+ minutes</option>
+                </select>
+            </div>
+
+
+            <button id="get-recommendations" class="cta-button">Start My Warm-Up!</button>
+        </section>
+
+        <section class="recommendations" id="recommendations" style="display: none;">
+            <h2>Your Morning Brain Boost</h2>
+            <p class="subhead">Ranked from easy to difficult</p>
+            <div id="game-list" class="game-grid"></div>
+            <button id="get-new-recommendations" class="secondary-button">Try Different Warm-Up</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Daily Game Warm-Up</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
