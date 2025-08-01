@@ -114,9 +114,14 @@ class GamePicker {
             }
         }
 
-        // Third pass: fill remaining time with other games
+        // Third pass: fill remaining time with non-Hey Good Game games
         for (const game of sortedGames) {
             const gameBase = this.getGameBaseName(game.id);
+            
+            // Skip Hey Good Games if we already have one
+            if (hasHeyGoodGame && game.publisher === 'Hey Good Game') {
+                continue;
+            }
             
             if (totalTime + game.timeMinutes <= timeLimit && !usedGameBases.has(gameBase)) {
                 selectedGames.push(game);
@@ -131,8 +136,12 @@ class GamePicker {
     getGameBaseName(gameId) {
         // Extract base game name (e.g., "mathler-easy" -> "mathler")
         const parts = gameId.split('-');
-        if (parts.length > 1 && ['easy', 'normal', 'medium', 'hard', 'advanced'].includes(parts[parts.length - 1])) {
-            return parts.slice(0, -1).join('-');
+        if (parts.length > 1) {
+            const lastPart = parts[parts.length - 1];
+            // Check if last part is a difficulty level
+            if (['easy', 'normal', 'medium', 'hard', 'advanced', 'killer', 'daily', 'master'].includes(lastPart)) {
+                return parts.slice(0, -1).join('-');
+            }
         }
         return gameId;
     }
