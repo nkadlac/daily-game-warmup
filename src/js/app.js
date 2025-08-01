@@ -90,6 +90,7 @@ class GamePicker {
                     usedGameBases.add(gameBase);
                     totalTime += game.timeMinutes;
                     
+                    // Mark if we've included a Hey Good Game from saved games
                     if (game.publisher === 'Hey Good Game') {
                         hasHeyGoodGame = true;
                     }
