@@ -13,7 +13,7 @@
     "name": "Connections",
     "type": "puzzle",
     "difficulty": "medium",
-    "timeMinutes": 10,
+    "timeMinutes": 8,
     "description": "Find groups of four items that share something in common.",
     "url": "https://www.nytimes.com/games/connections"
   },
@@ -332,5 +332,50 @@
     "timeMinutes": 5,
     "description": "Guess the hidden mathematical equation in 6 tries.",
     "url": "https://nerdlegame.com/"
+  },
+  {
+    "id": "kenken",
+    "name": "KenKen 5x5",
+    "type": "math",
+    "difficulty": "medium",
+    "timeMinutes": 12,
+    "description": "Fill the grid using math operations and logic in cages.",
+    "url": "https://www.kenkenpuzzle.com/game"
+  },
+  {
+    "id": "squaredle",
+    "name": "Squaredle",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Find words in a grid by connecting adjacent letters.",
+    "url": "https://squaredle.app/"
+  },
+  {
+    "id": "polygonle",
+    "name": "Polygonle",
+    "type": "geography",
+    "difficulty": "medium",
+    "timeMinutes": 8,
+    "description": "Guess the country from its simplified polygon shape.",
+    "url": "https://www.polygonle.com/"
+  },
+  {
+    "id": "phrasle",
+    "name": "Phrasle",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 8,
+    "description": "Guess the common phrase or saying in this Wordle-style game.",
+    "url": "https://phrasle.com/"
+  },
+  {
+    "id": "redactle",
+    "name": "Redactle Unlimited",
+    "type": "trivia",
+    "difficulty": "hard",
+    "timeMinutes": 15,
+    "description": "Guess the Wikipedia article by revealing redacted words.",
+    "url": "https://redactle-unlimited.com/"
   }
 ]
