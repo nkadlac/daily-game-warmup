@@ -36,13 +36,11 @@ class GamePicker {
             shareListBtn.addEventListener('click', () => this.shareList());
         }
 
-        // Theme button selection
+        // Theme button selection (allow multiple)
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Remove active class from all buttons
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                // Add active class to clicked button
-                btn.classList.add('active');
+                // Toggle active class on clicked button
+                btn.classList.toggle('active');
                 this.savePreferences();
             });
         });
@@ -64,9 +62,14 @@ class GamePicker {
     }
 
     getPreferences() {
-        // Get selected theme
-        const activeTheme = document.querySelector('.theme-btn.active');
-        const gameTypes = activeTheme ? [activeTheme.dataset.theme] : ['word'];
+        // Get all selected themes
+        const activeThemes = document.querySelectorAll('.theme-btn.active');
+        const gameTypes = Array.from(activeThemes).map(btn => btn.dataset.theme);
+        
+        // If no themes selected, default to word
+        if (gameTypes.length === 0) {
+            gameTypes.push('word');
+        }
         
         // Get selected time from active marker
         const activeTimeMarker = document.querySelector('.time-marker.active');
