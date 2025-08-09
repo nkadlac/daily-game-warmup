@@ -377,5 +377,113 @@
     "timeMinutes": 15,
     "description": "Guess the Wikipedia article by revealing redacted words.",
     "url": "https://redactle-unlimited.com/"
+  },
+  {
+    "id": "heardle",
+    "name": "Heardle",
+    "type": "music",
+    "difficulty": "medium",
+    "timeMinutes": 3,
+    "description": "Guess the song from increasingly longer audio clips.",
+    "url": "https://www.heardle.info/daily/"
+  },
+  {
+    "id": "framed",
+    "name": "Framed",
+    "type": "movie",
+    "difficulty": "medium", 
+    "timeMinutes": 4,
+    "description": "Guess the movie from a series of still frames revealed one by one.",
+    "url": "https://framed.wtf"
+  },
+  {
+    "id": "actorle",
+    "name": "Actorle",
+    "type": "movie",
+    "difficulty": "medium",
+    "timeMinutes": 3,
+    "description": "Guess the actor based on their movie roles and clues.",
+    "url": "https://actorle.com"
+  },
+  {
+    "id": "moviedle",
+    "name": "Moviedle", 
+    "type": "movie",
+    "difficulty": "hard",
+    "timeMinutes": 4,
+    "description": "Identify movies from short, sped-up trailer clips.",
+    "url": "https://moviedle.xyz"
+  },
+  {
+    "id": "absurdle",
+    "name": "Absurdle",
+    "type": "word",
+    "difficulty": "hard",
+    "timeMinutes": 5,
+    "description": "Adversarial Wordle that changes its target word to avoid your guesses.",
+    "url": "https://qntm.org/files/absurdle/absurdle.html"
+  },
+  {
+    "id": "primel",
+    "name": "Primel",
+    "type": "math",
+    "difficulty": "medium",
+    "timeMinutes": 3,
+    "description": "Guess the 5-digit prime number using Wordle-style clues.",
+    "url": "https://converged.yt/primel"
+  },
+  {
+    "id": "tradle",
+    "name": "Tradle",
+    "type": "geography",
+    "difficulty": "medium",
+    "timeMinutes": 4,
+    "description": "Guess the country based on its exports and trade data.",
+    "url": "https://oec.world/en/games/tradle"
+  },
+  {
+    "id": "flagle",
+    "name": "Flagle",
+    "type": "geography", 
+    "difficulty": "easy",
+    "timeMinutes": 2,
+    "description": "Guess the country from its flag, revealed tile by tile.",
+    "url": "https://www.flagle.io"
+  },
+  {
+    "id": "pokedle",
+    "name": "Pokedle",
+    "type": "trivia",
+    "difficulty": "medium",
+    "timeMinutes": 3,
+    "description": "Guess the Pokemon based on their silhouette and clues.",
+    "url": "https://pokedle.com"
+  },
+  {
+    "id": "cyphr",
+    "name": "Cyphr",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 8,
+    "description": "Solve a pyramid-style letter guessing puzzle where each row forms a random word.",
+    "url": "https://cyphrgame.com/"
+  },
+  {
+    "id": "circuits",
+    "name": "Circuits!",
+    "type": "logic",
+    "difficulty": "medium",
+    "timeMinutes": 10,
+    "description": "Connect circuits and complete electrical pathways in this daily logic puzzle.",
+    "url": "https://circuitsgame.com/"
+  },
+  {
+    "id": "letterwalk",
+    "name": "Letter Walk",
+    "type": "word",
+    "difficulty": "medium",
+    "timeMinutes": 6,
+    "description": "Navigate through letters to form words in this daily word puzzle challenge.",
+    "url": "https://letterwalk.com/"
   }
 ]

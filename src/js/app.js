@@ -47,6 +47,8 @@ class GamePicker {
         const viewLeaderboardBtn = document.getElementById('view-leaderboard');
         const backHomeBtn = document.getElementById('back-home');
         const shareLeaderboardBtn = document.getElementById('share-leaderboard');
+        const findGamesTab = document.getElementById('find-games-tab');
+        const topGamesTab = document.getElementById('top-games-tab');
 
         getRecommendationsBtn.addEventListener('click', () => this.getRecommendations());
         if (getNewPicksBtn) {
@@ -63,6 +65,14 @@ class GamePicker {
         }
         if (shareLeaderboardBtn) {
             shareLeaderboardBtn.addEventListener('click', () => this.shareLeaderboard());
+        }
+        
+        // Navigation tab events
+        if (findGamesTab) {
+            findGamesTab.addEventListener('click', () => this.showFindGamesTab());
+        }
+        if (topGamesTab) {
+            topGamesTab.addEventListener('click', () => this.showTopGamesTab());
         }
 
         // Theme button selection (allow multiple)
@@ -561,11 +571,6 @@ class GamePicker {
             selectionContent.style.display = 'none';
             resultsContent.style.display = 'flex';
             
-            // Show tertiary actions on mobile
-            const tertiaryActions = document.querySelector('.tertiary-actions');
-            if (tertiaryActions) {
-                tertiaryActions.style.display = 'block';
-            }
             
             // Animate height change only if needed
             if (shouldAnimateHeight) {
@@ -698,25 +703,24 @@ class GamePicker {
         const selectionContent = document.getElementById('selection-content');
         const resultsContent = document.getElementById('results-content');
         const leaderboardContent = document.getElementById('leaderboard-content');
-        const tertiaryActions = document.querySelector('.tertiary-actions');
+        
+        // Update tab states to show "Find Daily Games" as active
+        const navTabs = document.querySelector('.nav-tabs');
+        navTabs.setAttribute('data-active', 'find-games');
+        document.getElementById('find-games-tab').classList.add('active');
+        document.getElementById('top-games-tab').classList.remove('active');
         
         // Reset all animation classes
         this.resetAnimationClasses();
         
-        setTimeout(() => {
-            // Hide results and leaderboard, show selection
-            resultsContent.style.display = 'none';
-            leaderboardContent.style.display = 'none';
-            selectionContent.style.display = 'flex';
-            
-            // Hide tertiary actions on selection view
-            if (tertiaryActions) {
-                tertiaryActions.style.display = 'none';
-            }
-            
-            // Let container naturally adjust to selection content size
-            mainContainer.style.height = 'auto';
-        }, 300);
+        // Hide results and leaderboard, show selection immediately
+        resultsContent.style.display = 'none';
+        leaderboardContent.style.display = 'none';
+        selectionContent.style.display = 'flex';
+        
+        
+        // Let container naturally adjust to selection content size
+        mainContainer.style.height = 'auto';
     }
     
     resetAnimationClasses() {
@@ -766,6 +770,74 @@ class GamePicker {
             });
         }, 400);
         setTimeout(() => resultsActions.classList.add('fade-in'), 600 + (document.querySelectorAll('.result-card').length * 150));
+    }
+
+    staggeredFadeInLeaderboard() {
+        const leaderboardContent = document.getElementById('leaderboard-content');
+        const resultsTitle = leaderboardContent.querySelector('.results-title');
+        const resultsSubtitle = leaderboardContent.querySelector('.results-subtitle');
+        const resultsList = leaderboardContent.querySelector('.results-list');
+        const resultsActions = leaderboardContent.querySelector('.results-actions');
+        
+        // Set initial hidden state directly with inline styles
+        if (resultsTitle) {
+            resultsTitle.style.opacity = '0';
+            resultsTitle.style.transform = 'translateY(20px)';
+        }
+        if (resultsSubtitle) {
+            resultsSubtitle.style.opacity = '0';
+            resultsSubtitle.style.transform = 'translateY(20px)';
+        }
+        if (resultsList) {
+            resultsList.style.opacity = '0';
+            resultsList.style.transform = 'translateY(20px)';
+        }
+        if (resultsActions) {
+            resultsActions.style.opacity = '0';
+            resultsActions.style.transform = 'translateY(20px)';
+        }
+        
+        leaderboardContent.querySelectorAll('.result-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+        });
+        
+        // Start staggered fade-in animation using direct style changes
+        setTimeout(() => {
+            if (resultsTitle) {
+                resultsTitle.style.opacity = '1';
+                resultsTitle.style.transform = 'translateY(0)';
+            }
+        }, 0);
+        
+        setTimeout(() => {
+            if (resultsSubtitle) {
+                resultsSubtitle.style.opacity = '1';
+                resultsSubtitle.style.transform = 'translateY(0)';
+            }
+        }, 200);
+        
+        setTimeout(() => {
+            if (resultsList) {
+                resultsList.style.opacity = '1';
+                resultsList.style.transform = 'translateY(0)';
+            }
+            // Fade in individual leaderboard cards with staggered timing
+            const resultCards = leaderboardContent.querySelectorAll('.result-card');
+            resultCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 + (index * 150));
+            });
+        }, 400);
+        
+        setTimeout(() => {
+            if (resultsActions) {
+                resultsActions.style.opacity = '1';
+                resultsActions.style.transform = 'translateY(0)';
+            }
+        }, 600 + (leaderboardContent.querySelectorAll('.result-card').length * 150));
     }
 
     updateSliderPosition(timeValue) {
@@ -959,6 +1031,12 @@ class GamePicker {
         const leaderboardContent = document.getElementById('leaderboard-content');
         const leaderboardList = document.getElementById('leaderboard-list');
         
+        // Update tab states to show "Top Daily Games" as active
+        const navTabs = document.querySelector('.nav-tabs');
+        navTabs.setAttribute('data-active', 'top-games');
+        document.getElementById('find-games-tab').classList.remove('active');
+        document.getElementById('top-games-tab').classList.add('active');
+        
         console.log('Elements found:', {
             mainContainer: !!mainContainer,
             selectionContent: !!selectionContent, 
@@ -989,19 +1067,20 @@ class GamePicker {
             leaderboardList.innerHTML = html;
         }
         
+        // Check if we need to animate (leaderboard was hidden before)
+        const shouldAnimate = leaderboardContent.style.display === 'none';
+        
         // Hide other content and show leaderboard immediately 
         selectionContent.style.display = 'none';
         resultsContent.style.display = 'none';
         leaderboardContent.style.display = 'flex';
         
-        // Hide tertiary actions when showing leaderboard
-        const tertiaryActions = document.querySelector('.tertiary-actions');
-        if (tertiaryActions) {
-            tertiaryActions.style.display = 'none';
-        }
         
         // Let container naturally adjust to leaderboard content size
         mainContainer.style.height = 'auto';
+        
+        // Scroll to top of page when showing leaderboard
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         
         // Debug the visibility
         console.log('Leaderboard content style:', leaderboardContent.style.display);
@@ -1010,14 +1089,11 @@ class GamePicker {
         
         console.log('Leaderboard should now be visible');
         
-        // Force visibility of result cards (they might have opacity: 0 from CSS)
-        setTimeout(() => {
-            const resultCards = leaderboardContent.querySelectorAll('.result-card');
-            resultCards.forEach(card => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            });
-        }, 100);
+        // Animate leaderboard content with staggered fade-in only when switching tabs
+        if (shouldAnimate) {
+            // We're switching to leaderboard from another view, so animate
+            setTimeout(() => this.staggeredFadeInLeaderboard(), 50);
+        }
     }
 
     createLeaderboardCard(game, rank) {
@@ -1079,6 +1155,28 @@ class GamePicker {
             // Desktop: always copy to clipboard with button feedback
             this.copyToClipboardWithFeedback(shareText, 'share-leaderboard');
         }
+    }
+
+    showFindGamesTab() {
+        // Update tab states and sliding background
+        const navTabs = document.querySelector('.nav-tabs');
+        navTabs.setAttribute('data-active', 'find-games');
+        document.getElementById('find-games-tab').classList.add('active');
+        document.getElementById('top-games-tab').classList.remove('active');
+        
+        // Show selection view
+        this.showSelectionView();
+    }
+
+    showTopGamesTab() {
+        // Update tab states and sliding background
+        const navTabs = document.querySelector('.nav-tabs');
+        navTabs.setAttribute('data-active', 'top-games');
+        document.getElementById('find-games-tab').classList.remove('active');
+        document.getElementById('top-games-tab').classList.add('active');
+        
+        // Show leaderboard
+        this.showLeaderboard();
     }
 }
 

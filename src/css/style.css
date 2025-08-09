@@ -467,14 +467,21 @@ body::before {
     transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Leaderboard specific overrides */
+/* Leaderboard content should start visible, not hidden like regular results */
 #leaderboard-content .results-title, 
 #leaderboard-content .results-subtitle, 
 #leaderboard-content .results-list, 
-#leaderboard-content .results-actions,
+#leaderboard-content .results-actions {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Leaderboard cards should still animate in with stagger effect */
 #leaderboard-content .result-card {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .results-title.fade-in {
@@ -937,12 +944,74 @@ body::before {
 }
 
 .tertiary-btn:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    border-color: rgba(0, 0, 0, 0.9);
     transform: translateY(-1px);
 }
 
 .tertiary-btn:active {
     transform: translateY(0);
+}
+
+/* Navigation Tabs */
+.nav-section {
+    padding: 16px 20px 0;
+    margin-bottom: 24px;
+}
+
+.nav-tabs {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-start;
+    background-color: #f0f0f0;
+    border-radius: 22px;
+    padding: 4px;
+    display: inline-flex;
+    position: relative;
+}
+
+.nav-tabs::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(50% - 2px);
+    height: calc(100% - 8px);
+    background-color: #000000;
+    border-radius: 999px;
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+.nav-tab {
+    background-color: transparent;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    color: #666666;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.nav-tab.active {
+    color: #ffffff;
+}
+
+.nav-tab:hover:not(.active) {
+    color: #333333;
+}
+
+/* Slide the background to the second tab when Top Daily Games is active */
+.nav-tabs[data-active="top-games"]::before {
+    transform: translateX(100%);
 }
 
 /* Hide tertiary actions on desktop by default */

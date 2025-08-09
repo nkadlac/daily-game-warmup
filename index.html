@@ -11,16 +11,18 @@
 </head>
 <body>
     <div class="app-container">
-        <div class="hero-section">
-            <h1>Daily Puzzle Picker</h1>
-            <p>Create a new daily game routine</p>
-        </div>
-
         <div class="main-card" id="main-container">
+            <!-- Navigation -->
+            <div class="nav-section">
+                <div class="nav-tabs" data-active="find-games">
+                    <button class="nav-tab active" id="find-games-tab">Find Daily Games</button>
+                    <button class="nav-tab" id="top-games-tab">Top Daily Games</button>
+                </div>
+            </div>
             <!-- Selection Content -->
             <div class="main-card-content fade-in" id="selection-content">
                 <div class="theme-section">
-                    <h3>What games do you love? <span class="select-multiple">(Select Multiple)</span></h3>
+                    <h3>What types of games do you love?</h3>
                     <div class="theme-buttons">
                         <button class="theme-btn active" data-theme="word">
                             <div class="theme-icon"></div>
@@ -103,13 +105,6 @@
                     <button id="share-leaderboard" class="primary-btn">SHARE THIS LIST</button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Tertiary Action - Leaderboard (outside main container) -->
-        <div class="tertiary-actions">
-            <button id="view-leaderboard" class="tertiary-btn">
-                View the <strong>Top 10 games</strong> leaderboard →
-            </button>
         </div>
     </div>
 
